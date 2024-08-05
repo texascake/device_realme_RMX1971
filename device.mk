@@ -19,7 +19,7 @@ $(call inherit-product, hardware/qcom-caf/common/common.mk)
 
 PRODUCT_BROKEN_VERIFY_USES_LIBRARIES := true
 RELAX_USES_LIBRARY_CHECK := true
-OVERRIDE_PRODUCT_COMPRESSED_APEX := false
+#OVERRIDE_PRODUCT_COMPRESSED_APEX := false
 PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS := true
 
 # Bluetooth
@@ -529,3 +529,16 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/wifi/p2p_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/p2p_supplicant_overlay.conf \
     $(LOCAL_PATH)/wifi/wpa_supplicant_overlay.conf:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/wpa_supplicant_overlay.conf \
     $(LOCAL_PATH)/wifi/WCNSS_qcom_cfg.ini:$(TARGET_COPY_OUT_VENDOR)/etc/wifi/WCNSS_qcom_cfg.ini
+
+-include vendor/extra/product.mk
+
+# Signing
+ifneq (eng,$(TARGET_BUILD_VARIANT))
+ifneq (,$(wildcard vendor/extra/keys/releasekey.pk8))
+PRODUCT_DEFAULT_DEV_CERTIFICATE := vendor/extra/keys/releasekey
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.oem_unlock_supported=1
+endif
+ifneq (,$(wildcard vendor/extra/keys/otakey.x509.pem))
+PRODUCT_OTA_PUBLIC_KEYS := vendor/extra/keys/otakey.x509.pem
+endif
+endif
